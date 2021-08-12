@@ -20,6 +20,9 @@ dependencies:
   google_fonts: ^2.1.0
   intl: ^0.17.0
   file_picker: ^3.0.4
+  image_picker: ^0.8.2
+  flutter_progress_hud: ^2.0.0
+  change_notifier_builder: ^1.1.2
   
 
 dev_dependencies:

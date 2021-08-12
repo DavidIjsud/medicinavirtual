@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_progress_hud/flutter_progress_hud.dart';
+import 'package:flutterwebtopico/pages/mainPagePaciente.dart';
 import 'package:flutterwebtopico/pages/signup.page.dart';
+import 'package:flutterwebtopico/providers/Paciente.provider.dart';
 import 'package:flutterwebtopico/widgets/bezierContainer.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -13,6 +16,17 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+
+  TextEditingController _controladorEmail, _controladorPassword;
+  var progress;
+
+  @override
+  initState(){
+      this._controladorEmail = new TextEditingController(text: "");
+      this._controladorPassword = new TextEditingController(text: "");
+  }
+
+
   Widget _backButton() {
     return InkWell(
       onTap: () {
@@ -34,7 +48,7 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Widget _entryField(String title, {bool isPassword = false}) {
+  Widget _entryField(String title, TextEditingController controlador  ,{bool isPassword = false}) {
     return Container(
       margin: EdgeInsets.symmetric(vertical: 10),
       child: Column(
@@ -48,6 +62,7 @@ class _LoginPageState extends State<LoginPage> {
             height: 10,
           ),
           TextField(
+              controller:  controlador,
               obscureText: isPassword,
               decoration: InputDecoration(
                   border: InputBorder.none,
@@ -59,26 +74,50 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Widget _submitButton() {
-    return Container(
-      width: MediaQuery.of(context).size.width,
-      padding: EdgeInsets.symmetric(vertical: 15),
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(5)),
-          boxShadow: <BoxShadow>[
-            BoxShadow(
-                color: Colors.grey.shade200,
-                offset: Offset(2, 4),
-                blurRadius: 5,
-                spreadRadius: 2)
-          ],
-          gradient: LinearGradient(
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight,
-              colors: [Color(0xfffbb448), Color(0xfff7892b)])),
-      child: Text(
-        'Ingresar',
-        style: TextStyle(fontSize: 20, color: Colors.white),
+    return GestureDetector(
+      onTap: () {
+        
+
+        if( this._controladorEmail.text == "" || this._controladorPassword.text == ""){
+              final snackBar = SnackBar(content: Text('Llenar todos los campos'));
+              ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        }  else {
+              progress.showWithText('Verificando informacion'); 
+              PacienteProvider.login( this._controladorPassword.text ,  this._controladorEmail.text)
+                    .then((value) {
+                          progress.dismiss();
+                          if( value['status'] == 'true' ){
+                               Navigator.push(
+            context, MaterialPageRoute(builder: (context) => HomeMainPagePaciente()));
+                          }else{
+                            final snackBar = SnackBar(content: Text('Datos incorrectos del paciente'));
+                            ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                          }
+                    });
+        }
+      
+      },
+      child: Container(
+        width: MediaQuery.of(context).size.width,
+        padding: EdgeInsets.symmetric(vertical: 15),
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.all(Radius.circular(5)),
+            boxShadow: <BoxShadow>[
+              BoxShadow(
+                  color: Colors.grey.shade200,
+                  offset: Offset(2, 4),
+                  blurRadius: 5,
+                  spreadRadius: 2)
+            ],
+            gradient: LinearGradient(
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+                colors: [Color(0xfffbb448), Color(0xfff7892b)])),
+        child: Text(
+          'Ingresar',
+          style: TextStyle(fontSize: 20, color: Colors.white),
+        ),
       ),
     );
   }
@@ -221,11 +260,11 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Widget _emailPasswordWidget() {
+  Widget _emailPasswordWidget( ) {
     return Column(
       children: <Widget>[
-        _entryField("Email"),
-        _entryField("Contraseña", isPassword: true),
+        _entryField("Email", this._controladorEmail ),
+        _entryField("Contraseña", this._controladorPassword ,isPassword: true),
       ],
     );
   }
@@ -234,9 +273,15 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     return Scaffold(
-        body: Container(
+        body: ProgressHUD(
+           barrierEnabled: false,
+           indicatorColor: Colors.red,
+           child: Container(
       height: height,
-      child: Stack(
+      child: Builder(
+        builder: (c) {
+             this.progress = ProgressHUD.of(c);
+             return Stack(
         children: <Widget>[
           Positioned(
               top: -height * .15,
@@ -272,7 +317,11 @@ class _LoginPageState extends State<LoginPage> {
           ),
           Positioned(top: 40, left: 0, child: _backButton()),
         ],
-      ),
-    ));
+      );
+        }
+            ),  
+        )
+      ), 
+    );
   }
 }
