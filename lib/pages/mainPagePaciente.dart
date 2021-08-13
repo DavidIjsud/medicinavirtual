@@ -1,6 +1,7 @@
 import 'package:change_notifier_builder/change_notifier_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterwebtopico/helpers/notifierValueChange.dart';
+import 'package:flutterwebtopico/providers/push_notifications_providers.dart';
 
 class HomeMainPagePaciente extends StatefulWidget {
   const HomeMainPagePaciente({ Key key }) : super(key: key);
@@ -17,6 +18,13 @@ class _HomeMainPagePacienteState extends State<HomeMainPagePaciente> {
     void initState() {
       // TODO: implement initState
       super.initState();
+
+        final pushNotifcationProvider = new PushNotificationProvider();
+         pushNotifcationProvider.initNotifications();
+
+          pushNotifcationProvider.mensajes.listen( (onData) => {
+                    //navigatorKey.currentState.pushNamed('mensaje', arguments:  onData  )
+           } );
 
         this._widgetChangeMedicoHorarios = new Singleton();
 
