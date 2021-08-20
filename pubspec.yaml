@@ -24,6 +24,8 @@ dependencies:
   flutter_progress_hud: ^2.0.0
   change_notifier_builder: ^1.1.2
   firebase_messaging: ^10.0.4
+  jitsi_meet: ^4.0.0
+  web_socket_channel: ^2.1.0
   
 
 dev_dependencies:

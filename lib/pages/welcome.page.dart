@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutterwebtopico/pages/login.page.dart';
 import 'package:flutterwebtopico/pages/signup.page.dart';
+import 'package:flutterwebtopico/providers/push_notifications_providers.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class WelcomePage extends StatefulWidget {
@@ -13,6 +14,19 @@ class WelcomePage extends StatefulWidget {
 }
 
 class _WelcomePageState extends State<WelcomePage> {
+
+  @override
+  initState(){
+      final pushNotifcationProvider = new PushNotificationProvider();
+         pushNotifcationProvider.initNotifications();
+
+          pushNotifcationProvider.mensajes.listen( (onData) => {
+                    //navigatorKey.currentState.pushNamed('mensaje', arguments:  onData  )
+           } );
+
+  }
+
+
   Widget _submitButton() {
     return InkWell(
       onTap: () {
